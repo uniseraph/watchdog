@@ -30,9 +30,9 @@ image:
 	docker tag ${IMAGE_NAME}:${VERSION}-${GITCOMMIT} ${REGISTRY}/${IMAGE_NAME}:${VERSION}-${GITCOMMIT}
 
 release:
-	docker push ${IMAGE_NAME}:${VERSION}-${GITCOMMIT}
-	docker push ${IMAGE_NAME}:${VERSION}
-	docker push ${IMAGE_NAME}
+	docker push ${REGISTRY}/${IMAGE_NAME}:${VERSION}-${GITCOMMIT}
+	docker push ${REGISTRY}/${IMAGE_NAME}:${VERSION}
+	docker push ${REGISTRY}/${IMAGE_NAME}
 
 run:
 	docker run -ti --rm  --net=host -v /var/run/docker.sock:/var/run/docker.sock  omega-reg/watchdog:0.1.0 --log-level=info -H unix:///var/run/docker.sock consul://10.15.232.5:8500
