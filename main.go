@@ -34,7 +34,6 @@ var (
 
 type watchdogOptions struct {
 	version  bool
-	host     string
 	loglevel string
 	mode     string
 }
@@ -64,7 +63,6 @@ func newWatchdogCommand() *cobra.Command {
 
 	flags := cmd.Flags()
 	flags.BoolVarP(&opts.version, "version", "v", false, "Print version information and quit")
-	flags.StringVarP(&opts.host, "host", "H", client.DefaultDockerHost, "Docker host to connect to")
 	flags.StringVar(&opts.loglevel, "log-level", "info", "Set log level (debug, info, error, fatal)")
 	flags.StringVarP(&opts.mode, "mode", "m", "docker-compose", "Set service mode: name/docker-compose")
 
@@ -81,12 +79,12 @@ func setLogLevel(level string) error {
 }
 
 func runWatchdog(opts watchdogOptions, address string) {
-	dockerClient, err := getDockerClient(opts.host)
+	dockerClient, err := getDockerClient()
 	if err != nil {
 		logrus.Fatal("connect to docker error: ", err)
 	}
 
-	backend, err := getServiceBackend(address)
+	backend, err := getServiceBackend(address, opts)
 	if err != nil {
 		logrus.Fatal("connect to service backend error: ", err)
 	}
@@ -109,19 +107,20 @@ func runWatchdog(opts watchdogOptions, address string) {
 	}
 }
 
-func getServiceBackend(address string) (backends.ContainerBackend, error) {
+func getServiceBackend(address string , opts watchdogOptions) (backends.ContainerBackend, error) {
 	parts := strings.SplitN(address, "://", 2)
 	if len(parts) != 2 {
 		return nil, errors.New("invalid service backend address")
 	}
-	return backends.New(parts[0], parts[1], make(map[string]string,10))
+
+
+	newOpts := make(map[string]string)
+	newOpts["registrator.service.getter"]=opts.mode
+	return backends.New(parts[0], parts[1], newOpts)
 }
 
-func getDockerClient(host string) (client.APIClient, error) {
-	if host == "" {
-		return client.NewEnvClient()
-	}
-	return client.NewClient(host, dockerAPIVersion, nil, nil)
+func getDockerClient() (client.APIClient, error) {
+	return client.NewEnvClient()
 }
 
 func signalTrap(handle func(os.Signal)) {

@@ -52,7 +52,6 @@ func (b *backend) Register(c *types.ContainerJSON) error {
 
 	logrus.Debugf("consul backend:registering container %v",  c.ID[0:6] )
 
-
 	s := b.ContainerToService(c)
 
 	if s==nil {

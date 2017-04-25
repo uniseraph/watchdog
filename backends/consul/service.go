@@ -21,7 +21,7 @@ func  (b *backend)ContainerToService(cJSON *types.ContainerJSON) *Service {
 	name, tags := b.getServiceNameAndTags(cJSON)
 
 	if name == "" {
-		logrus.Infof("consul  backend : container  %s  name is empty , ignore" , cJSON.ID[0:6])
+		logrus.Infof("consul  backend:container  %s  name is empty , ignore" , cJSON.ID[0:6])
 		return nil
 	}
 
@@ -36,7 +36,7 @@ func  (b *backend)ContainerToService(cJSON *types.ContainerJSON) *Service {
 		}
 	}
 	if address == "" {
-		logrus.Debug("consul backend : container %s  address is empty , ignore" , cJSON.ID[0:6])
+		logrus.Debugf("consul backend:container %s  address is empty , ignore" , cJSON.ID[0:6])
 		return nil
 	}
 

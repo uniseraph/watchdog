@@ -29,12 +29,11 @@ image:
 	docker tag ${IMAGE_NAME}:${VERSION}-${GITCOMMIT} ${REGISTRY}/${IMAGE_NAME}:${VERSION}
 	docker tag ${IMAGE_NAME}:${VERSION}-${GITCOMMIT} ${REGISTRY}/${IMAGE_NAME}:${VERSION}-${GITCOMMIT}
 
-release:
+publish:
 	docker push ${REGISTRY}/${IMAGE_NAME}:${VERSION}-${GITCOMMIT}
 	docker push ${REGISTRY}/${IMAGE_NAME}:${VERSION}
-	docker push ${REGISTRY}/${IMAGE_NAME}
 
 run:
-	docker run -ti --rm  --net=host -v /var/run/docker.sock:/var/run/docker.sock  omega-reg/watchdog:0.1.0 --log-level=info -H unix:///var/run/docker.sock consul://10.15.232.5:8500
+	docker run -ti --rm  --net=host -v /var/run/docker.sock:/var/run/docker.sock -e DOCKER_HOST=unix:///var/run/docker.sock  omega-reg/watchdog:0.1.0 --log-level=info consul://127.0.0.1:8500
 
 .PHONY: build binary build-local image release
